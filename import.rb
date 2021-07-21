@@ -293,6 +293,16 @@ VERBOSE = true
 TEST_CORRUPTED = true
 CONCURRENCY = Concurrent.physical_processor_count
 
+def test_deps
+  result, status = Open3.capture2e('magick', '-version')
+  raise "magick must be available" unless status.success?
+
+  result, status = Open3.capture2e('ffprobe', '-version')
+  raise "ffprobe must be available" unless status.success?
+end
+
+test_deps
+
 measure_time do
   importer = Importer.new incoming_path, storage_path
   importer.import
