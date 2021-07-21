@@ -142,17 +142,23 @@ class Importer
       output_path, output_filename = get_output_filename media_info, filename, extname
 
       ensure_dir_exists(@storage_path + output_path)
-      
+
       FileUtils.mv filename, (@storage_path + output_path + output_filename)
 
       puts "#{output_path + output_filename}" if VERBOSE
-        
+
       @digest_database.insert (output_path + output_filename), digest
     end
   end
 
   def get_output_filename media_info, filename, extname
-    output_path = Pathname.new(media_info[:type]) + (media_info[:camera] || "unknown camera") + media_info[:datetime].strftime("%Y") + media_info[:datetime].strftime("%m")
+    camera_name = if media_info[:camera] && media_info[:camera].strip.length > 0
+      media_info[:camera].strip
+    else
+      "unknown camera"
+    end
+
+    output_path = Pathname.new(media_info[:type]) + (camera_name) + media_info[:datetime].strftime("%Y") + media_info[:datetime].strftime("%m")
     output_basename = media_info[:datetime].strftime("%Y-%m-%d %H-%M-%S")
 
     check_if_exist = Proc.new do |output_filename|
